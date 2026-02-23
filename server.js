@@ -36,21 +36,18 @@ app.get("/", (req, res) => {
 });
 
 // ========================================
-// 投稿一覧取得 API（いいね対応版）【Day3 で変更】
+// 投稿一覧取得 API（いいね対応版）
 // ========================================
 // GET /api/posts
 // GET /api/posts?userId=xxx（いいね状態を取得する場合）
 
 app.get("/api/posts", async (req, res) => {
   try {
-    // --- Day3 追加 ここから ---
     // クエリパラメータからユーザーIDを取得（任意）
     const userId = req.query.userId;
-    // --- Day3 追加 ここまで ---
 
     const posts = await prisma.post.findMany({
       orderBy: { createdAt: "desc" },
-      // --- Day3 追加 ここから ---
       include: {
         // いいねの数を取得
         _count: {
@@ -64,10 +61,8 @@ app.get("/api/posts", async (req, res) => {
             }
           : false,
       },
-      // --- Day3 追加 ここまで ---
     });
 
-    // --- Day3 追加 ここから ---
     // レスポンス用にデータを整形
     const formattedPosts = posts.map((post) => ({
       id: post.id,
@@ -81,7 +76,6 @@ app.get("/api/posts", async (req, res) => {
     }));
 
     res.json(formattedPosts);
-    // --- Day3 追加 ここまで ---
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(500).json({ error: "投稿の取得に失敗しました" });
